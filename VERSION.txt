@@ -1,0 +1,6 @@
+Irish Player IQ — Auto-Sync + QA Build
+Version: 2026.08.14-auto1
+Roster: 114 verified entries at build time
+Schedule: 12 official 2026 games verified at build time
+Automation: daily GitHub Actions roster/photo/schedule verification
+QA: 100 simulated personas / 47,024 simulated questions in this run
