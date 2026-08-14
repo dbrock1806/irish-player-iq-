@@ -1,1 +1,0 @@
-Optional: add official player uniform photos here as JPG files using the slugs described in the main README. Missing photos are handled automatically.
