@@ -62,4 +62,13 @@ function historyMode(){document.body.innerHTML=`<div class="screen">${top('HISTO
 function photoLab(){document.body.innerHTML=`<div class="screen">${top('PHOTO RADAR','VERIFIED VISUALS')}<div class="notice"><b>STRICT PHOTO GATE</b><p>Photos become scored only after player identity, Notre Dame context and exposed number are independently verified. Candidate sources never become quiz answers automatically.</p></div></div>`}
 function updates(){document.body.innerHTML=`<div class="screen">${top('DATA CENTER','VERIFICATION & SYNC')}<div class="status"><b>✓ VERIFIED ROSTER</b><h2>${roster.length} players</h2><p>Source: official Notre Dame 2026-27 roster.<br>Checked: ${esc(meta.checked_at)}</p></div><div class="status"><b>LIVE STAT PIPELINE</b><p>After each game, the sync job checks official Notre Dame schedule, postgame and statistical sources. New verified results are written to the data files and the hosted app loads them on the next open.</p><p><b>Policy:</b> no projections, guesses or unverified stats are inserted.</p></div><div class="status"><b>SYNC CADENCE</b><p>Hourly automated check in the deployment workflow, plus refresh-on-open in the app.</p></div></div>`}
 function simple(a,b,c){document.body.innerHTML=`<div class="screen">${top(a,b)}<div class="locked"><h2>${esc(b)}</h2><p>${esc(c)}</p><button class="next" onclick="home()">BACK TO PLAYER IQ</button></div></div>`}
-(async()=>{try{await load()}catch(e){console.error(e)}home()})();
+(async()=>{
+  try{await load();home();}
+  catch(e){
+    console.error(e);
+    state.lastSync='DATA LOAD ERROR';
+    home();
+    const n=document.querySelector('.data-note');
+    if(n) n.innerHTML='<b>DATA LOAD ERROR</b><p>The app shell is available, but one or more data files could not be loaded. Refresh once. No unverified information is shown.</p>';
+  }
+})();
