@@ -1,3 +1,0 @@
-IRISH PLAYER IQ — FULL BUILD
-Design target: multi-screen Notre Dame football IQ app shown in the supplied composite mockup.
-Includes home dashboard, progress, games, all quiz modes, photo support, player profiles, season, pre-game, post-game, history, settings, PWA support and local saved progress.
