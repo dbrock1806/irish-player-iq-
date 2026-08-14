@@ -1,1 +1,0 @@
-self.addEventListener("install",()=>self.skipWaiting()); self.addEventListener("activate",async()=>{try{await self.registration.unregister();}catch(e){} self.clients&&self.clients.claim&&self.clients.claim();});
