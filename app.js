@@ -1,13 +1,23 @@
 let roster=[],schedule=[],stats={},history={},opponents={},meta={},current=null,answered=false;
-let state=JSON.parse(localStorage.getItem('ipiq6')||'{"score":0,"streak":0,"best":0,"xp":0,"seen":0,"mastery":{}}');
+const DEFAULT_STATE={score:0,streak:0,best:0,xp:0,seen:0,mastery:{}};
+function readState(){
+  try{
+    const raw=localStorage.getItem('ipiq6');
+    const parsed=raw?JSON.parse(raw):{};
+    return Object.assign({},DEFAULT_STATE,parsed,{mastery:Object.assign({},DEFAULT_STATE.mastery,parsed.mastery||{})});
+  }catch(e){return Object.assign({},DEFAULT_STATE,{mastery:{}});}
+}
+let state=readState();
 const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), norm=s=>String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,''), shuffle=a=>[...a].sort(()=>Math.random()-.5);
-const save=()=>localStorage.setItem('ipiq6',JSON.stringify(state));
+const save=()=>{try{localStorage.setItem('ipiq6',JSON.stringify(state));}catch(e){/* progress storage unavailable; gameplay still works */}};
 async function load(){
   const qs=Date.now();
-  const [r,s,t,h,o]=await Promise.all([
-    fetch(`./roster.json?${qs}`),fetch(`./schedule.json?${qs}`),fetch(`./stats.json?${qs}`),fetch(`./history.json?${qs}`),fetch(`./opponents.json?${qs}`)
-  ]);
-  meta=await r.json(); roster=meta.players; schedule=(await s.json()).games; stats=await t.json(); history=await h.json(); opponents=await o.json();
+  const urls=['roster.json','schedule.json','stats.json','history.json','opponents.json'];
+  const responses=await Promise.all(urls.map(u=>fetch(`./${u}?${qs}`,{cache:'no-store'})));
+  if(responses.some(r=>!r.ok)) throw new Error('Verified data file unavailable');
+  const [r,s,t,h,o]=await Promise.all(responses.map(r=>r.json()));
+  if(!Array.isArray(r.players)||!Array.isArray(s.games)) throw new Error('Verified data format invalid');
+  meta=r; roster=r.players; schedule=s.games; stats=t; history=h; opponents=o;
   state.lastSync=meta.checked_at; save();
 }
 function top(e,t){return `<div class="goldline"></div><header><div class="brand">IRISH <b>PLAYER IQ</b></div><button class="back" onclick="home()">← MENU</button></header><section class="head"><div class="eyebrow">${e}</div><h1>${t}</h1></section>`}
@@ -63,12 +73,18 @@ function photoLab(){document.body.innerHTML=`<div class="screen">${top('PHOTO RA
 function updates(){document.body.innerHTML=`<div class="screen">${top('DATA CENTER','VERIFICATION & SYNC')}<div class="status"><b>✓ VERIFIED ROSTER</b><h2>${roster.length} players</h2><p>Source: official Notre Dame 2026-27 roster.<br>Checked: ${esc(meta.checked_at)}</p></div><div class="status"><b>LIVE STAT PIPELINE</b><p>After each game, the sync job checks official Notre Dame schedule, postgame and statistical sources. New verified results are written to the data files and the hosted app loads them on the next open.</p><p><b>Policy:</b> no projections, guesses or unverified stats are inserted.</p></div><div class="status"><b>SYNC CADENCE</b><p>Hourly automated check in the deployment workflow, plus refresh-on-open in the app.</p></div></div>`}
 function simple(a,b,c){document.body.innerHTML=`<div class="screen">${top(a,b)}<div class="locked"><h2>${esc(b)}</h2><p>${esc(c)}</p><button class="next" onclick="home()">BACK TO PLAYER IQ</button></div></div>`}
 (async()=>{
-  try{await load();home();}
-  catch(e){
-    console.error(e);
-    state.lastSync='DATA LOAD ERROR';
+  try{
+    await load();
     home();
-    const n=document.querySelector('.data-note');
-    if(n) n.innerHTML='<b>DATA LOAD ERROR</b><p>The app shell is available, but one or more data files could not be loaded. Refresh once. No unverified information is shown.</p>';
+  }catch(e){
+    console.error(e);
+    state.lastSync='DATA UNAVAILABLE';
+    document.body.innerHTML=`<div class="screen"><div class="goldline"></div><main class="home">
+      <div class="eyebrow">NOTRE DAME FOOTBALL • 2026–27</div>
+      <h2>IRISH<br><span>PLAYER IQ</span></h2>
+      <div class="notice"><b>VERIFIED DATA IS CURRENTLY UNAVAILABLE</b>
+      <p>The app will not substitute, infer, or display unverified roster or statistics. Refresh after GitHub Pages finishes deploying.</p>
+      <button class="next" onclick="location.reload()">REFRESH APP →</button></div>
+      </main></div>`;
   }
 })();
