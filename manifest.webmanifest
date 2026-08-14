@@ -1,0 +1,10 @@
+{
+  "name": "Irish Player IQ",
+  "short_name": "Irish IQ",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#061425",
+  "theme_color": "#061425",
+  "orientation": "portrait",
+  "icons": []
+}
