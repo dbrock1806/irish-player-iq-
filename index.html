@@ -1,14 +1,8 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#061425"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Irish Player IQ"><link rel="manifest" href="./manifest.webmanifest"><link rel="stylesheet" href="./styles.css"><title>Irish Player IQ</title></head><body><div id="app"></div><script>
 window.addEventListener('error', function(e){
-  var a=document.getElementById('app');
-  if(a && !a.innerHTML.trim()){
-    a.innerHTML='<div style="min-height:100vh;background:#020810;color:#f7f7f5;font-family:system-ui;padding:40px 20px"><h1 style="color:#f0d477">Irish Player IQ</h1><p>The app could not load the verified roster.</p><p style="color:#95a8bb;font-size:13px">Refresh the page once. If this message remains, send the screenshot to ChatGPT.</p></div>';
-  }
+  console.error('Irish Player IQ error:', e.error || e.message);
 });
-window.addEventListener('unhandledrejection', function(){
-  var a=document.getElementById('app');
-  if(a && !a.innerHTML.trim()){
-    a.innerHTML='<div style="min-height:100vh;background:#020810;color:#f7f7f5;font-family:system-ui;padding:40px 20px"><h1 style="color:#f0d477">Irish Player IQ</h1><p>The app could not finish loading its data.</p></div>';
-  }
+window.addEventListener('unhandledrejection', function(e){
+  console.error('Irish Player IQ promise error:', e.reason);
 });
 </script><script src="./app.js"></script></body></html>
