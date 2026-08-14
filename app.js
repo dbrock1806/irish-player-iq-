@@ -7,9 +7,9 @@
 (() => {
   "use strict";
 
-  /* -----------------------------
-     VERIFIED ROSTER DATA
-     ----------------------------- */
+  /* =========================================================
+     ROSTER
+     ========================================================= */
 
   const ROSTER_DATA = `
 0|Tionne Gray|DL
@@ -126,56 +126,57 @@
 94|Joe Reiff|DL
 95|Bryce Young|DL
 96|Joseph Vinci|LS
-  `.trim();
+`.trim();
 
-  const ROSTER = ROSTER_DATA
-    .split("\n")
-    .map(line => {
-      const [num, name, pos] = line.split("|");
-      return { num, name, pos };
-    });
+  const ROSTER = ROSTER_DATA.split("\n").map(line => {
+    const [num, name, pos] = line.split("|");
+    return { num, name, pos };
+  });
 
-  /* -----------------------------
+  /* =========================================================
      STATE
-     ----------------------------- */
+     ========================================================= */
 
   const STORAGE_KEY = "irish_player_iq_2026";
 
-  let state;
+  let state = {
+    score: 0,
+    streak: 0,
+    best: 0
+  };
 
   try {
-    state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-  } catch {
-    state = {};
-  }
-
-  state.score = Number(state.score || 0);
-  state.streak = Number(state.streak || 0);
-  state.best = Number(state.best || 0);
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved) {
+      state.score = Number(saved.score) || 0;
+      state.streak = Number(saved.streak) || 0;
+      state.best = Number(saved.best) || 0;
+    }
+  } catch (e) {}
 
   let mode = "numberPosition";
   let current = null;
   let locked = false;
 
-  /* -----------------------------
+  /* =========================================================
      HELPERS
-     ----------------------------- */
+     ========================================================= */
 
   function save() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch {}
+    } catch (e) {}
   }
 
   function shuffle(array) {
-    const a = [...array];
+    const copy = [...array];
 
-    for (let i = a.length - 1; i > 0; i--) {
+    for (let i = copy.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
+      [copy[i], copy[j]] = [copy[j], copy[i]];
     }
 
-    return a;
+    return copy;
   }
 
   function escapeHTML(value) {
@@ -192,101 +193,91 @@
     return ROSTER[Math.floor(Math.random() * ROSTER.length)];
   }
 
-  function uniqueValues(field) {
+  function unique(field) {
     return [...new Set(ROSTER.map(player => player[field]))];
   }
 
-  /* -----------------------------
-     QUESTION GENERATION
-     ----------------------------- */
+  /* =========================================================
+     QUESTION LOGIC
+     ========================================================= */
 
   function getQuestion() {
 
     if (mode === "numberPosition") {
       return {
-        title: `Who wears #${current.num} at ${current.pos}?`,
         label: "NUMBER + POSITION → NAME",
+        text: `Who wears #${current.num} at ${current.pos}?`,
         answer: current.name,
-        choices: getNameChoices()
+        choices: nameChoices()
       };
     }
 
     if (mode === "nameNumber") {
       return {
-        title: `What number does ${current.name} wear?`,
         label: "NAME → NUMBER",
+        text: `What number does ${current.name} wear?`,
         answer: current.num,
-        choices: getNumberChoices()
+        choices: numberChoices()
       };
     }
 
     if (mode === "namePosition") {
       return {
-        title: `What position does ${current.name} play?`,
         label: "NAME → POSITION",
+        text: `What position does ${current.name} play?`,
         answer: current.pos,
-        choices: getPositionChoices()
+        choices: positionChoices()
       };
     }
 
     return {
-      title: `Who wears #${current.num} at ${current.pos}?`,
       label: "NUMBER + POSITION → NAME",
+      text: `Who wears #${current.num} at ${current.pos}?`,
       answer: current.name,
-      choices: getNameChoices()
+      choices: nameChoices()
     };
   }
 
-  function getNameChoices() {
+  function nameChoices() {
 
-    const correct = current.name;
-
-    const wrong = shuffle(
-      ROSTER
-        .filter(player =>
-          player.name !== correct &&
-          !(player.num === current.num && player.pos === current.pos)
-        )
-        .map(player => player.name)
-    );
+    const wrong = ROSTER
+      .filter(player =>
+        player.name !== current.name &&
+        !(player.num === current.num && player.pos === current.pos)
+      )
+      .map(player => player.name);
 
     return shuffle([
-      correct,
-      ...wrong.slice(0, 3)
+      current.name,
+      ...shuffle([...new Set(wrong)]).slice(0, 3)
     ]);
   }
 
-  function getNumberChoices() {
+  function numberChoices() {
 
-    const correct = current.num;
-
-    const wrong = shuffle(
-      uniqueValues("num").filter(number => number !== correct)
-    );
+    const wrong = unique("num")
+      .filter(num => num !== current.num);
 
     return shuffle([
-      correct,
-      ...wrong.slice(0, 3)
+      current.num,
+      ...shuffle(wrong).slice(0, 3)
     ]);
   }
 
-  function getPositionChoices() {
+  function positionChoices() {
 
-    const correct = current.pos;
-
-    const wrong = shuffle(
-      uniqueValues("pos").filter(position => position !== correct)
-    );
+    const wrong = unique("pos")
+      .filter(pos => pos !== current.pos);
 
     return shuffle([
-      correct,
-      ...wrong.slice(0, 3)
+      current.pos,
+      ...shuffle(wrong).slice(0, 3)
     ]);
   }
 
-  /* -----------------------------
-     BUILD APP
-     ----------------------------- */
+  /* =========================================================
+     APP HTML
+     ========================================================= */
 
   function buildApp() {
 
@@ -301,16 +292,13 @@
             NOTRE DAME FOOTBALL • 2026–27
           </div>
 
-          <h1>
-            IRISH PLAYER IQ
-          </h1>
+          <h1>IRISH PLAYER IQ</h1>
 
           <p class="subtitle">
             Learn the roster. One player at a time.
           </p>
 
         </header>
-
 
         <section class="stats">
 
@@ -331,27 +319,24 @@
 
         </section>
 
-
         <main class="quiz-card">
 
-          <div class="question-label" id="questionLabel">
-            NUMBER + POSITION → NAME
-          </div>
+          <div class="question-label" id="questionLabel"></div>
 
-          <h2 id="question">
-            Loading...
-          </h2>
+          <h2 id="question">Loading...</h2>
 
           <div class="answers" id="answers"></div>
 
           <div id="result"></div>
 
-          <button class="next-button" id="nextButton">
+          <button
+            class="next-button"
+            id="nextButton"
+            style="display:none">
             NEXT QUESTION
           </button>
 
         </main>
-
 
         <section class="mode-section">
 
@@ -361,34 +346,25 @@
 
           <div class="modes">
 
-            <button
-              class="mode active"
-              data-mode="numberPosition">
+            <button class="mode active" data-mode="numberPosition">
               # + POS → NAME
             </button>
 
-            <button
-              class="mode"
-              data-mode="nameNumber">
+            <button class="mode" data-mode="nameNumber">
               NAME → #
             </button>
 
-            <button
-              class="mode"
-              data-mode="namePosition">
+            <button class="mode" data-mode="namePosition">
               NAME → POS
             </button>
 
-            <button
-              class="mode"
-              data-mode="numberPosition">
+            <button class="mode" data-mode="numberPosition">
               # + POS → NAME
             </button>
 
           </div>
 
         </section>
-
 
         <div class="bottom-buttons">
 
@@ -401,7 +377,6 @@
           </button>
 
         </div>
-
 
         <p class="footer-note">
           Duplicate jersey numbers are handled intentionally.
@@ -416,9 +391,9 @@
     newQuestion();
   }
 
-  /* -----------------------------
+  /* =========================================================
      EVENTS
-     ----------------------------- */
+     ========================================================= */
 
   function bindEvents() {
 
@@ -454,9 +429,9 @@
       });
   }
 
-  /* -----------------------------
+  /* =========================================================
      NEW QUESTION
-     ----------------------------- */
+     ========================================================= */
 
   function newQuestion() {
 
@@ -469,25 +444,21 @@
       question.label;
 
     document.getElementById("question").textContent =
-      question.title;
+      question.text;
 
     document.getElementById("result").innerHTML = "";
 
-    const next = document.getElementById("nextButton");
-
-    next.style.display = "none";
+    document.getElementById("nextButton").style.display = "none";
 
     const answers = document.getElementById("answers");
 
-    answers.innerHTML = question.choices
-      .map((choice, index) => `
-        <button
-          class="answer"
-          data-index="${index}">
-          ${escapeHTML(choice)}
-        </button>
-      `)
-      .join("");
+    answers.innerHTML = question.choices.map((choice, index) => `
+      <button
+        class="answer"
+        data-index="${index}">
+        ${escapeHTML(choice)}
+      </button>
+    `).join("");
 
     answers
       .querySelectorAll(".answer")
@@ -505,9 +476,9 @@
       });
   }
 
-  /* -----------------------------
+  /* =========================================================
      ANSWER
-     ----------------------------- */
+     ========================================================= */
 
   function answerQuestion(index, question) {
 
@@ -519,11 +490,9 @@
       ...document.querySelectorAll(".answer")
     ];
 
-    const selected =
-      question.choices[index];
+    const selected = question.choices[index];
 
-    const correct =
-      selected === question.answer;
+    const correct = selected === question.answer;
 
     buttons.forEach(button => {
       button.disabled = true;
@@ -533,10 +502,7 @@
 
       state.score++;
       state.streak++;
-
-      if (state.streak > state.best) {
-        state.best = state.streak;
-      }
+      state.best = Math.max(state.best, state.streak);
 
       buttons[index].classList.add("correct-answer");
 
@@ -562,7 +528,10 @@
 
       buttons.forEach(button => {
 
-        if (button.textContent.trim() === question.answer) {
+        if (
+          button.textContent.trim() ===
+          question.answer
+        ) {
           button.classList.add("correct-answer");
         }
 
@@ -586,13 +555,12 @@
     save();
     updateStats();
 
-    document.getElementById("nextButton").style.display =
-      "block";
+    document.getElementById("nextButton").style.display = "block";
   }
 
-  /* -----------------------------
+  /* =========================================================
      STATS
-     ----------------------------- */
+     ========================================================= */
 
   function updateStats() {
 
@@ -605,18 +573,19 @@
     if (best) best.textContent = state.best;
   }
 
-  /* -----------------------------
+  /* =========================================================
      RESET
-     ----------------------------- */
+     ========================================================= */
 
   function resetScore() {
 
-    const confirmed =
-      window.confirm(
+    if (
+      !window.confirm(
         "Reset your Irish Player IQ score and streak?"
-      );
-
-    if (!confirmed) return;
+      )
+    ) {
+      return;
+    }
 
     state.score = 0;
     state.streak = 0;
@@ -627,9 +596,9 @@
     newQuestion();
   }
 
-  /* -----------------------------
-     STYLES
-     ----------------------------- */
+  /* =========================================================
+     STYLING
+     ========================================================= */
 
   const style = document.createElement("style");
 
@@ -647,45 +616,48 @@
     body {
       margin: 0;
       min-height: 100vh;
+
       background:
         radial-gradient(
-          circle at 50% -10%,
-          #12365c 0%,
-          #071b32 38%,
-          #020d1b 75%
+          circle at 50% -12%,
+          #163b63 0%,
+          #09213c 34%,
+          #020d1b 78%
         );
-      color: white;
+
+      color: #ffffff;
+
       font-family:
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
+        Arial,
         sans-serif;
     }
 
     button {
       font-family: inherit;
+      cursor: pointer;
     }
 
     .app {
       width: 100%;
       max-width: 900px;
       min-height: 100vh;
-      margin: auto;
-      padding:
-        0
-        28px
-        50px;
+      margin: 0 auto;
+      padding: 0 28px 55px;
     }
 
     .gold-line {
-      height: 5px;
       width: 100%;
+      height: 5px;
+
       background:
         linear-gradient(
           90deg,
-          #d5a91a,
-          #f9d75c,
-          #d5a91a
+          #c89b1c,
+          #f8d75e,
+          #c89b1c
         );
     }
 
@@ -696,41 +668,44 @@
 
     .eyebrow {
       color: #a9b9cc;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 900;
       letter-spacing: 3px;
-      margin-bottom: 13px;
+      margin-bottom: 14px;
     }
 
     h1 {
       margin: 0;
-      color: #f5d35b;
-      font-size: clamp(42px, 11vw, 78px);
-      line-height: .95;
-      letter-spacing: -3px;
+
+      color: #f6d45b;
+
+      font-size:
+        clamp(44px, 10vw, 82px);
+
+      line-height: .94;
+      letter-spacing: -4px;
       font-weight: 950;
     }
 
     .subtitle {
-      margin:
-        22px
-        0
-        32px;
+      margin: 22px 0 34px;
 
-      color: #aabbd0;
-      font-size: clamp(18px, 4vw, 27px);
+      color: #a9bbcf;
+
+      font-size:
+        clamp(18px, 4vw, 28px);
     }
 
     .stats {
       display: grid;
-      grid-template-columns:
-        repeat(3, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 14px;
       margin-bottom: 32px;
     }
 
     .stat {
-      min-height: 105px;
+      min-height: 108px;
+
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -739,15 +714,15 @@
       background:
         linear-gradient(
           145deg,
-          rgba(25,61,96,.92),
-          rgba(10,35,60,.95)
+          rgba(24,58,92,.98),
+          rgba(10,34,59,.98)
         );
 
-      border: 2px solid #234d73;
-      border-radius: 24px;
+      border: 2px solid #28557c;
+      border-radius: 25px;
 
       box-shadow:
-        0 12px 30px rgba(0,0,0,.2);
+        0 14px 32px rgba(0,0,0,.24);
     }
 
     .stat span {
@@ -759,45 +734,45 @@
 
     .stat strong {
       margin-top: 5px;
-      font-size: 42px;
+      font-size: 43px;
       line-height: 1;
     }
 
     .quiz-card {
-      padding: 32px;
-      border-radius: 30px;
+      padding: 34px;
 
       background:
         linear-gradient(
           145deg,
-          rgba(24,48,74,.98),
-          rgba(12,31,52,.98)
+          rgba(25,50,77,.98),
+          rgba(11,30,51,.98)
         );
 
-      border: 2px solid #275579;
+      border: 2px solid #2a5a80;
+      border-radius: 30px;
 
       box-shadow:
-        0 20px 55px rgba(0,0,0,.28);
+        0 22px 60px rgba(0,0,0,.3);
     }
 
     .question-label {
       color: #f4d35e;
+
       font-size: 15px;
       font-weight: 950;
       letter-spacing: 2px;
     }
 
     #question {
-      margin:
-        14px
-        0
-        28px;
+      margin: 15px 0 29px;
+
+      color: #ffffff;
 
       font-size:
-        clamp(30px, 7vw, 50px);
+        clamp(30px, 6.5vw, 51px);
 
       line-height: 1.08;
-      letter-spacing: -.8px;
+      letter-spacing: -.9px;
     }
 
     .answers {
@@ -809,46 +784,58 @@
       width: 100%;
       min-height: 76px;
 
-      padding:
-        16px
-        20px;
+      padding: 16px 22px;
 
+      border: 2px solid #356b92;
       border-radius: 20px;
-      border: 2px solid #35698f;
 
       background:
         linear-gradient(
           145deg,
-          #14395f,
-          #0e2c4c
+          #153d64,
+          #0e2e50
         );
 
-      color: white;
+      color: #ffffff;
 
       font-size:
-        clamp(18px, 4.5vw, 26px);
+        clamp(18px, 4vw, 26px);
 
       font-weight: 850;
       text-align: left;
 
       transition:
-        transform .12s,
-        border-color .12s,
-        background .12s;
+        transform .12s ease,
+        background .12s ease,
+        border-color .12s ease;
+    }
+
+    .answer:hover {
+      border-color: #5786a9;
+      background:
+        linear-gradient(
+          145deg,
+          #19476f,
+          #123657
+        );
     }
 
     .answer:active {
       transform: scale(.985);
     }
 
+    .answer:disabled {
+      cursor: default;
+    }
+
     .answer.correct-answer {
-      background: #123d2e;
-      border-color: #55d69b;
+      background: #123d2d;
+      border-color: #58d69c;
     }
 
     .answer.wrong-answer {
       background: #47242b;
-      border-color: #e76d75;
+      border-color: #e36d76;
     }
 
     .result {
@@ -863,15 +850,18 @@
     }
 
     .result-icon {
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
+
+      flex: 0 0 36px;
 
       display: grid;
       place-items: center;
 
       border-radius: 50%;
-      font-weight: 950;
+
       font-size: 20px;
+      font-weight: 950;
     }
 
     .result strong,
@@ -885,28 +875,28 @@
 
     .result span {
       margin-top: 3px;
-      color: #c2cfdb;
+      color: #c5d1dc;
       font-size: 14px;
     }
 
     .correct-result {
       background: #10392b;
-      border: 1px solid #276d51;
+      border: 1px solid #2a7255;
     }
 
     .correct-result .result-icon {
-      background: #1b6d4b;
+      background: #1d714e;
       color: #a9f4cf;
     }
 
     .wrong-result {
       background: #45242a;
-      border: 1px solid #7a3c45;
+      border: 1px solid #7d3c46;
     }
 
     .wrong-result .result-icon {
-      background: #7c3943;
-      color: #ffd1d1;
+      background: #7e3944;
+      color: #ffd0d0;
     }
 
     .next-button {
@@ -921,8 +911,8 @@
       background:
         linear-gradient(
           180deg,
-          #f8d968,
-          #edc64a
+          #f9da6a,
+          #edc64b
         );
 
       color: #071728;
@@ -932,17 +922,22 @@
       letter-spacing: .5px;
 
       box-shadow:
-        0 8px 20px rgba(0,0,0,.2);
+        0 9px 22px rgba(0,0,0,.23);
+    }
+
+    .next-button:hover {
+      filter: brightness(1.04);
     }
 
     .mode-section {
-      margin-top: 32px;
+      margin-top: 34px;
     }
 
     .section-title {
       margin-bottom: 14px;
 
       color: #aebed0;
+
       font-size: 14px;
       font-weight: 950;
       letter-spacing: 2px;
@@ -957,24 +952,30 @@
     .mode,
     #resetButton,
     #newButton {
-
       min-height: 60px;
 
+      border: 2px solid #315f83;
       border-radius: 17px;
-      border: 2px solid #315d80;
 
-      background: #0d2b4b;
-      color: #b9c8d8;
+      background: #0d2d4e;
+
+      color: #bac9d8;
 
       font-size: 15px;
       font-weight: 950;
       letter-spacing: .4px;
     }
 
+    .mode:hover,
+    #resetButton:hover,
+    #newButton:hover {
+      border-color: #4b789a;
+    }
+
     .mode.active {
       background: #f5d35b;
-      color: #071728;
       border-color: #f5d35b;
+      color: #071728;
     }
 
     .bottom-buttons {
@@ -984,13 +985,9 @@
       margin-top: 12px;
     }
 
-    #resetButton,
-    #newButton {
-      color: #b9c8d8;
-    }
-
     .footer-note {
       max-width: 650px;
+
       margin:
         28px
         auto
@@ -999,6 +996,7 @@
       text-align: center;
 
       color: #71869c;
+
       font-size: 13px;
       line-height: 1.55;
     }
@@ -1014,18 +1012,25 @@
         padding-top: 34px;
       }
 
+      .eyebrow {
+        font-size: 11px;
+        letter-spacing: 2px;
+      }
+
       h1 {
-        font-size: 48px;
-        letter-spacing: -2px;
+        font-size: 49px;
+        letter-spacing: -2.5px;
       }
 
       .subtitle {
-        font-size: 19px;
         margin-top: 17px;
+        margin-bottom: 27px;
+        font-size: 19px;
       }
 
       .stats {
         gap: 8px;
+        margin-bottom: 24px;
       }
 
       .stat {
@@ -1034,7 +1039,8 @@
       }
 
       .stat span {
-        font-size: 11px;
+        font-size: 10px;
+        letter-spacing: 1.5px;
       }
 
       .stat strong {
@@ -1042,28 +1048,36 @@
       }
 
       .quiz-card {
-        padding: 22px 18px;
+        padding: 23px 18px;
         border-radius: 24px;
       }
 
       .question-label {
         font-size: 12px;
+        letter-spacing: 1.5px;
       }
 
       #question {
+        margin-top: 12px;
         font-size: 31px;
       }
 
       .answer {
         min-height: 68px;
-        font-size: 19px;
+        padding: 14px 17px;
         border-radius: 17px;
+        font-size: 19px;
       }
 
       .mode,
       #resetButton,
       #newButton {
         min-height: 56px;
+        border-radius: 16px;
+        font-size: 12px;
+      }
+
+      .footer-note {
         font-size: 12px;
       }
     }
@@ -1072,9 +1086,9 @@
 
   document.head.appendChild(style);
 
-  /* -----------------------------
+  /* =========================================================
      START
-     ----------------------------- */
+     ========================================================= */
 
   buildApp();
 
