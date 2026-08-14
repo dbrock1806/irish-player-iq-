@@ -1,4 +1,4 @@
-let roster=[],schedule=[],stats={},history={},opponents={},meta={},current=null,answered=false;
+let roster=[],schedule=[],stats={},history={},opponents={},meta={},current=null,answered=false,correctAnswer='';
 const DEFAULT_STATE={score:0,streak:0,best:0,xp:0,seen:0,mastery:{}};
 function readState(){
   try{
@@ -12,13 +12,24 @@ const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"']/g,m=>({'
 const save=()=>{try{localStorage.setItem('ipiq6',JSON.stringify(state));}catch(e){/* progress storage unavailable; gameplay still works */}};
 async function load(){
   const qs=Date.now();
-  const urls=['roster.json','schedule.json','stats.json','history.json','opponents.json'];
-  const responses=await Promise.all(urls.map(u=>fetch(`./${u}?${qs}`,{cache:'no-store'})));
-  if(responses.some(r=>!r.ok)) throw new Error('Verified data file unavailable');
-  const [r,s,t,h,o]=await Promise.all(responses.map(r=>r.json()));
-  if(!Array.isArray(r.players)||!Array.isArray(s.games)) throw new Error('Verified data format invalid');
-  meta=r; roster=r.players; schedule=s.games; stats=t; history=h; opponents=o;
-  state.lastSync=meta.checked_at; save();
+  const get=async u=>{
+    try{
+      const r=await fetch(`./${u}?${qs}`,{cache:'no-store'});
+      if(!r.ok) throw new Error(`${u}: HTTP ${r.status}`);
+      return await r.json();
+    }catch(e){ console.warn('Optional/remote data unavailable:',u,e); return null; }
+  };
+  // Roster is the core of the app. It must load independently so a missing
+  // secondary feed can never blank the player-learning experience.
+  const r=await get('roster.json');
+  if(!r || !Array.isArray(r.players) || !r.players.length) throw new Error('Verified roster unavailable');
+  meta=r; roster=r.players;
+  const [s,t,h,o]=await Promise.all([get('schedule.json'),get('stats.json'),get('history.json'),get('opponents.json')]);
+  schedule=Array.isArray(s?.games)?s.games:[];
+  stats=(t&&typeof t==='object')?t:{games:[],player_stats:{}};
+  history=(h&&typeof h==='object')?h:{verified_seasons:[]};
+  opponents=(o&&typeof o==='object')?o:{};
+  state.lastSync=meta.checked_at||'VERIFIED ROSTER'; save();
 }
 function top(e,t){return `<div class="goldline"></div><header><div class="brand">IRISH <b>PLAYER IQ</b></div><button class="back" onclick="home()">← MENU</button></header><section class="head"><div class="eyebrow">${e}</div><h1>${t}</h1></section>`}
 function home(){
@@ -45,20 +56,20 @@ function bump(p,field,ok){let m=mget(p);m[field]=Math.max(0,Math.min(10,m[field]
 function optionsFor(field,p){const target=p[field];let pool=[...new Set(roster.map(x=>x[field]).filter(Boolean))].filter(x=>x!==target);return shuffle([target,...shuffle(pool).slice(0,3)])}
 function answerUI(question, choices, onAnswer, sub='CHOOSE YOUR ANSWER'){
  document.body.innerHTML=`<div class="screen">${top('IRISH MIX-UP',question)}<div class="qwrap"><div class="qsub">${sub}</div><div class="answers">${choices.map((x,i)=>`<button class="answer" data-v="${esc(x)}"><b>${String.fromCharCode(65+i)}</b>${esc(x)}</button>`).join('')}</div><div id="res" class="res"></div><button id="next" class="next" hidden>NEXT →</button></div></div>`;
- $('.answers').onclick=e=>{const b=e.target.closest('.answer');if(!b||answered)return;answered=true;const ok=onAnswer(b.dataset.v);document.querySelectorAll('.answer').forEach(x=>{if(norm(x.dataset.v)===norm(onAnswer.correct))x.classList.add('correct');else x.classList.add('dim')});b.classList.remove('dim');b.classList.add(ok?'correct':'wrong');$('#res').className='res show '+(ok?'good':'bad');$('#res').innerHTML=`<b>${ok?'✓ CORRECT':'✕ NOT QUITE'}</b><span>${ok?'Keep building the connection.':`Correct answer: ${esc(onAnswer.correct)}`}</span>`;$('#next').hidden=false;save()};
+ $('.answers').onclick=e=>{const b=e.target.closest('.answer');if(!b||answered)return;answered=true;const ok=onAnswer(b.dataset.v);document.querySelectorAll('.answer').forEach(x=>{if(norm(x.dataset.v)===norm(correctAnswer))x.classList.add('correct');else x.classList.add('dim')});b.classList.remove('dim');b.classList.add(ok?'correct':'wrong');$('#res').className='res show '+(ok?'good':'bad');$('#res').innerHTML=`<b>${ok?'✓ CORRECT':'✕ NOT QUITE'}</b><span>${ok?'Keep building the connection.':`Correct answer: ${esc(correctAnswer)}`}</span>`;$('#next').hidden=false;save()};
  $('#next').onclick=()=>mixup();
 }
 function mixup(){
  current=roster[Math.floor(Math.random()*roster.length)];answered=false;state.seen++;const m=mget(current);
  const modes=['numToName','nameToNum','nameToPos','numToPos']; if(m.visual<3)modes.push('visualLike'); const mode=modes[Math.floor(Math.random()*modes.length)];
- if(mode==='numToName'){onAnswer.correct=current.name;answerUI(`WHO WEARS #${current.num}?`,optionsFor('name',current),v=>{let ok=norm(v)===norm(current.name);bump(current,'name',ok);bump(current,'num',ok);if(ok)reward(10);return ok})}
- else if(mode==='nameToNum'){onAnswer.correct=current.num;answerUI(`WHAT NUMBER DOES ${current.name.toUpperCase()} WEAR?`,optionsFor('num',current),v=>{let ok=v===current.num;bump(current,'num',ok);bump(current,'name',ok);if(ok)reward(10);return ok})}
- else if(mode==='nameToPos'){onAnswer.correct=current.pos;answerUI(`${current.name.toUpperCase()} — WHAT POSITION?`,optionsFor('pos',current),v=>{let ok=v===current.pos;bump(current,'pos',ok);if(ok)reward(10);return ok})}
- else if(mode==='numToPos'){onAnswer.correct=current.pos;answerUI(`#${current.num} — WHAT POSITION?`,optionsFor('pos',current),v=>{let ok=v===current.pos;bump(current,'pos',ok);if(ok)reward(10);return ok})}
+ if(mode==='numToName'){correctAnswer=current.name;answerUI(`WHO WEARS #${current.num}?`,optionsFor('name',current),v=>{let ok=norm(v)===norm(current.name);bump(current,'name',ok);bump(current,'num',ok);if(ok)reward(10);return ok})}
+ else if(mode==='nameToNum'){correctAnswer=current.num;answerUI(`WHAT NUMBER DOES ${current.name.toUpperCase()} WEAR?`,optionsFor('num',current),v=>{let ok=v===current.num;bump(current,'num',ok);bump(current,'name',ok);if(ok)reward(10);return ok})}
+ else if(mode==='nameToPos'){correctAnswer=current.pos;answerUI(`${current.name.toUpperCase()} — WHAT POSITION?`,optionsFor('pos',current),v=>{let ok=v===current.pos;bump(current,'pos',ok);if(ok)reward(10);return ok})}
+ else if(mode==='numToPos'){correctAnswer=current.pos;answerUI(`#${current.num} — WHAT POSITION?`,optionsFor('pos',current),v=>{let ok=v===current.pos;bump(current,'pos',ok);if(ok)reward(10);return ok})}
  else {visualQuiz()}
 }
 function reward(x){state.score++;state.streak++;state.best=Math.max(state.best,state.streak);state.xp+=x}
-function quiz(type){current=roster[Math.floor(Math.random()*roster.length)];answered=false;let ask=type==='player';onAnswer.correct=ask?current.num:current.name;answerUI(ask?`${current.name.toUpperCase()} — WHAT NUMBER?`:`WHO WEARS #${current.num}?`,ask?optionsFor('num',current):optionsFor('name',current),v=>{let ok=norm(v)===norm(onAnswer.correct);bump(current,ask?'num':'name',ok);if(ok)reward(10);else state.streak=0;return ok},'CORE PLAYER LEARNING')}
+function quiz(type){current=roster[Math.floor(Math.random()*roster.length)];answered=false;let ask=type==='player';correctAnswer=ask?current.num:current.name;answerUI(ask?`${current.name.toUpperCase()} — WHAT NUMBER?`:`WHO WEARS #${current.num}?`,ask?optionsFor('num',current):optionsFor('name',current),v=>{let ok=norm(v)===norm(correctAnswer);bump(current,ask?'num':'name',ok);if(ok)reward(10);else state.streak=0;return ok},'CORE PLAYER LEARNING')}
 function visualQuiz(){document.body.innerHTML=`<div class="screen">${top('VISUAL IQ','VERIFIED PHOTO MODE')}<div class="locked"><div class="lock">◉</div><h2>PHOTO VERIFICATION IN PROGRESS</h2><p>Visual scored questions are intentionally locked until a real Notre Dame player image has been verified for identity, uniform context and exposed jersey number.</p><p><b>No substitute image is used.</b></p><button class="next" onclick="photoLab()">PHOTO RADAR →</button></div></div>`}
 function elite(){current=roster[Math.floor(Math.random()*roster.length)];answered=false;document.body.innerHTML=`<div class="screen">${top('ELITE MODE','HIDDEN NUMBER')}<div class="locked"><div class="lock">▣</div><h2>PHOTO VERIFICATION GATE</h2><p>Elite scored questions activate only when a verified Notre Dame photo shows the correct player and the jersey number can be independently verified.</p><p><b>Current status:</b> no unverified image will be used.</p><button class="next" onclick="photoLab()">PHOTO RADAR →</button></div></div>`}
 function facts(){const p=roster[Math.floor(Math.random()*roster.length)];document.body.innerHTML=`<div class="screen">${top('PLAYER IQ','PLAYER CARD')}<div class="player-card"><div class="num-small">#${p.num}</div><h2>${esc(p.name)}</h2><div class="pos">${esc(p.pos)}</div><div class="verified">✓ VERIFIED CORE DATA</div><div class="facts"><div><small>NUMBER</small><b>#${esc(p.num)}</b></div><div><small>POSITION</small><b>${esc(p.pos)}</b></div></div></div><div class="notice"><b>MORE FACTS ARE NOT SHOWN YET</b><p>The app will add biographical and statistical facts only when they are verified from an authoritative source.</p></div><button class="next" onclick="facts()">NEXT PLAYER →</button></div>`}

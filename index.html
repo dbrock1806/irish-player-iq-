@@ -2,7 +2,7 @@
 window.addEventListener('error', function(e){
   var a=document.getElementById('app');
   if(a && !a.innerHTML.trim()){
-    a.innerHTML='<div style="min-height:100vh;background:#020810;color:#f7f7f5;font-family:system-ui;padding:40px 20px"><h1 style="color:#f0d477">Irish Player IQ</h1><p>The app encountered a loading error.</p><p style="color:#95a8bb;font-size:13px">Refresh the page once. If this message remains, send the screenshot to ChatGPT.</p></div>';
+    a.innerHTML='<div style="min-height:100vh;background:#020810;color:#f7f7f5;font-family:system-ui;padding:40px 20px"><h1 style="color:#f0d477">Irish Player IQ</h1><p>The app could not load the verified roster.</p><p style="color:#95a8bb;font-size:13px">Refresh the page once. If this message remains, send the screenshot to ChatGPT.</p></div>';
   }
 });
 window.addEventListener('unhandledrejection', function(){
