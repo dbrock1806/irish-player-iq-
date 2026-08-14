@@ -1,53 +1,54 @@
-IRISH PLAYER IQ — COMPLETE APP PACKAGE
+IRISH PLAYER IQ — FULL REBUILD
+================================
 
-This package is the clean rebuild of the Notre Dame football roster memory game.
+This is a standalone static Progressive Web App for GitHub Pages.
 
-UPLOAD ALL OF THESE FILES/FOLDERS TO THE ROOT OF THE REPOSITORY:
-- index.html
-- app.js
-- styles.css
-- manifest.webmanifest
-- sw.js
-- .nojekyll
-- icons/icon-192.png
-- icons/icon-512.png
+FILES
+- index.html: entry point
+- app.js: game logic + embedded 2026-27 roster + schedule
+- styles.css: full responsive styling
+- manifest.webmanifest: installable app metadata
+- sw.js: offline cache
+- icons/: app icons
+- photos/: optional local player uniform photos
 
-OPTIONAL:
-- .github/workflows/pages.yml is included as a second deployment method.
-  For the first setup, use GitHub Pages -> Deploy from a branch -> main -> /(root).
-  Do not switch to Actions until the branch/root version is confirmed working.
+DEPLOYMENT
+1. Upload the contents of this folder to the ROOT of the GitHub repository.
+2. Keep index.html, app.js, and styles.css in the repository root.
+3. Keep the icons folder and its two PNG files intact.
+4. GitHub Settings > Pages > Deploy from branch > main > /(root).
 
-CURRENT APP FEATURES:
-- Notre Dame 2026–27 roster embedded locally
-- Duplicate jersey numbers handled using number + position
-- Number + position -> player quiz
-- Player -> number quiz
-- Player -> position quiz
-- Score, streak, best score
-- Reset score
-- Roster study/review
-- Photo Lab section ready for verified uniform photos
-- Responsive desktop/mobile design
-- PWA manifest and install metadata
-- Offline-capable static assets after first successful load
-- No npm/build step and no external API required for the quiz
+PHOTO LAB
+The app automatically looks for:
+photos/<player-slug>.jpg
 
-PHOTO FEATURE:
-The Photo Lab is intentionally prepared but does not invent or hot-link unverified player images.
-The next phase can add official Notre Dame uniform photos with jersey numbers visible and
-then create photo-based quiz questions.
+Example:
+photos/leonard-moore.jpg
+photos/cj-carr.jpg
+photos/adon-shuler.jpg
 
-GITHUB PAGES:
-1. Upload the files/folders above directly to the repository ROOT.
-2. Commit to main.
-3. Settings -> Pages -> Source: Deploy from a branch.
-4. Branch: main.
-5. Folder: /(root).
-6. Save.
-7. Wait for the Pages deployment.
-8. Test the site in a private/incognito window.
+If a photo is missing, the app displays a clean jersey-number placeholder instead of breaking.
 
-IMPORTANT:
-The exact filename "index.html" is required and is case-sensitive.
-Do not put the files inside an extra folder.
-Do not upload only the ZIP.
+FEATURES
+- Home dashboard / Irish IQ
+- Mix-Up 10-question mode
+- Number -> Player
+- Player -> Number
+- Player -> Position
+- Photo -> Player
+- Photo -> Number
+- Photo -> Position
+- Hidden Number / Elite Mode
+- 50/50 lifeline
+- Streak Boost
+- Skip
+- Score, streak, best streak, XP and level
+- Player mastery/progress
+- Season schedule
+- Official roster link
+- LocalStorage progress
+- Offline PWA caching
+- Responsive phone + desktop layout
+
+ROSTER SOURCE
+Core identity fields are based on the Notre Dame 2026 football roster supplied for this project and cross-checked against the official Notre Dame 2026 roster publication.

@@ -1,19 +1,19 @@
 {
   "name": "Irish Player IQ",
-  "short_name": "Irish IQ",
-  "start_url": "./",
+  "short_name": "Irish Player IQ",
+  "start_url": ".",
   "display": "standalone",
-  "background_color": "#071426",
-  "theme_color": "#071426",
-  "description": "Notre Dame Football 2026\u201327 roster memorization game.",
+  "background_color": "#020d1b",
+  "theme_color": "#031325",
+  "description": "Notre Dame football roster memory game for 2026\u201327.",
   "icons": [
     {
-      "src": "./icons/icon-192.png",
+      "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "./icons/icon-512.png",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
