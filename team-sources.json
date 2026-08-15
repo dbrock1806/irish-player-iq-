@@ -1,0 +1,59 @@
+{
+  "season": "2026",
+  "verified_at": "2026-08-14",
+  "source_policy": "Official team athletics sites are the preferred source. Live connected team schedules/rosters use a live college-football data endpoint with official-source links shown where known.",
+  "teams": [
+    {
+      "name": "Notre Dame",
+      "official_schedule": "https://fightingirish.com/sports/football/schedule/season/1907-08/"
+    },
+    {
+      "name": "Wisconsin",
+      "official_schedule": "https://uwbadgers.com/sports/football/schedule"
+    },
+    {
+      "name": "Rice",
+      "official_schedule": "https://riceowls.com/sports/football/schedule"
+    },
+    {
+      "name": "Michigan State",
+      "official_schedule": "https://msuspartans.com/sports/football/schedule/"
+    },
+    {
+      "name": "Purdue",
+      "official_schedule": "https://purduesports.com/sports/football/schedule/season/2026"
+    },
+    {
+      "name": "North Carolina",
+      "official_schedule": "https://goheels.com/sports/football/schedule"
+    },
+    {
+      "name": "Stanford",
+      "official_schedule": "https://gostanford.com/sports/football/schedule"
+    },
+    {
+      "name": "BYU",
+      "official_schedule": "https://byucougars.com/sports/football/schedule/season/2026"
+    },
+    {
+      "name": "Navy",
+      "official_schedule": "https://navysports.com/sports/football/schedule"
+    },
+    {
+      "name": "Miami (FL)",
+      "official_schedule": "https://miamihurricanes.com/sports/football/schedule/"
+    },
+    {
+      "name": "Boston College",
+      "official_schedule": "https://bceagles.com/sports/football/schedule"
+    },
+    {
+      "name": "SMU",
+      "official_schedule": "https://smumustangs.com/sports/football/schedule"
+    },
+    {
+      "name": "Syracuse",
+      "official_schedule": "https://cuse.com/sports/football/schedule/46431"
+    }
+  ]
+}

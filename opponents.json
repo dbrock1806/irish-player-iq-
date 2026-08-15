@@ -1,0 +1,26 @@
+{
+  "season":"2026",
+  "verified_at":"2026-08-14",
+  "opponents":[
+    {
+      "name":"Wisconsin",
+      "coach":"Luke Fickell",
+      "record":"4–8 (2025)",
+      "conferenceRecord":"2–7 Big Ten (2025)",
+      "apRank":"NR",
+      "coachesRank":"NR",
+      "lastMeeting":"Notre Dame won 41–13 in 2021 at Soldier Field",
+      "series":"Notre Dame leads 9–6–1",
+      "questions":[
+        {"label":"GAME PREP • COACH","title":"WHO IS WISCONSIN'S HEAD COACH?","support":"Wisconsin Badgers • 2026 matchup","answer":"Luke Fickell","choices":["Luke Fickell","Marcus Freeman","Paul Chryst","Bret Bielema"],"learn":"Luke Fickell is entering his fourth full season as Wisconsin's head coach in 2026."},
+        {"label":"GAME PREP • RECORD","title":"WHAT WAS WISCONSIN'S 2025 RECORD?","support":"Wisconsin • 2025 season","answer":"4–8","choices":["4–8","8–4","6–6","5–7"],"learn":"Wisconsin finished 4–8 overall in 2025 and 2–7 in Big Ten play."},
+        {"label":"GAME PREP • CONFERENCE","title":"WHAT WAS WISCONSIN'S 2025 BIG TEN RECORD?","support":"Wisconsin • 2025 season","answer":"2–7","choices":["2–7","7–2","4–5","3–6"],"learn":"Wisconsin went 2–7 in Big Ten play in 2025."},
+        {"label":"GAME PREP • VENUE","title":"WHERE WILL NOTRE DAME PLAY WISCONSIN?","support":"2026 Shamrock Series","answer":"Lambeau Field","choices":["Lambeau Field","Camp Randall Stadium","Notre Dame Stadium","Soldier Field"],"learn":"The 2026 Shamrock Series will be played at Lambeau Field in Green Bay."},
+        {"label":"GAME PREP • HISTORY","title":"WHO WON THE LAST NOTRE DAME–WISCONSIN GAME?","support":"Last meeting: 2021 Shamrock Series","answer":"Notre Dame","choices":["Notre Dame","Wisconsin","They tied","They did not play"],"learn":"Notre Dame beat Wisconsin 41–13 at Soldier Field in 2021."},
+        {"label":"GAME PREP • SERIES","title":"WHO LEADS THE ALL-TIME SERIES?","support":"Notre Dame vs. Wisconsin","answer":"Notre Dame","choices":["Notre Dame","Wisconsin","Tied","Unknown"],"learn":"Notre Dame leads the series 9–6–1."},
+        {"label":"GAME PREP • RANKING","title":"IS WISCONSIN CURRENTLY IN THE 2026 COACHES TOP 25?","support":"2026 preseason Coaches Poll","answer":"No","choices":["No","Yes, No. 20","Yes, No. 25","Poll not released"],"learn":"Wisconsin is outside the preseason Coaches Top 25."},
+        {"label":"GAME PREP • MATCHUP","title":"WHAT MAKES THIS GAME A SHAMROCK SERIES GAME?","support":"Notre Dame vs. Wisconsin • Sept. 6, 2026","answer":"It is a neutral-site Notre Dame game at Lambeau Field","choices":["It is a neutral-site Notre Dame game at Lambeau Field","It is a Big Ten conference game","It is a playoff game","It is at Camp Randall Stadium"],"learn":"Notre Dame is the designated home side for the Shamrock Series matchup at Lambeau Field."}
+      ]
+    }
+  ]
+}

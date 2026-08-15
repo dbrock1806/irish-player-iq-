@@ -1,0 +1,410 @@
+{
+  "season": "2026-27",
+  "verified_at": "2026-08-14",
+  "questions": [
+    {
+      "id": "h01",
+      "difficulty": 1,
+      "category": "Notre Dame University",
+      "question": "In what year was the University of Notre Dame founded?",
+      "answer": "1842",
+      "choices": [
+        "1842",
+        "1844",
+        "1887",
+        "1901"
+      ],
+      "learn": "Notre Dame began on November 26, 1842, when Rev. Edward Sorin, C.S.C., and seven Holy Cross companions arrived in northern Indiana."
+    },
+    {
+      "id": "h02",
+      "difficulty": 1,
+      "category": "Notre Dame University",
+      "question": "Who founded the University of Notre Dame?",
+      "answer": "Rev. Edward Sorin, C.S.C.",
+      "choices": [
+        "Rev. Edward Sorin, C.S.C.",
+        "Knute Rockne",
+        "Rev. John Zahm, C.S.C.",
+        "Ara Parseghian"
+      ],
+      "learn": "Rev. Edward Sorin, C.S.C., founded Notre Dame in 1842."
+    },
+    {
+      "id": "h03",
+      "difficulty": 1,
+      "category": "Notre Dame Football",
+      "question": "What year did Notre Dame football begin?",
+      "answer": "1887",
+      "choices": [
+        "1887",
+        "1897",
+        "1909",
+        "1913"
+      ],
+      "learn": "Notre Dame football began in 1887."
+    },
+    {
+      "id": "h04",
+      "difficulty": 1,
+      "category": "Notre Dame Football",
+      "question": "Which school played Notre Dame in its first football game?",
+      "answer": "Michigan",
+      "choices": [
+        "Michigan",
+        "Army",
+        "USC",
+        "Navy"
+      ],
+      "learn": "Michigan traveled to South Bend for Notre Dame's first football game on Nov. 23, 1887."
+    },
+    {
+      "id": "h05",
+      "difficulty": 2,
+      "category": "Notre Dame University",
+      "question": "In what year was Notre Dame officially chartered by the Indiana legislature?",
+      "answer": "1844",
+      "choices": [
+        "1842",
+        "1844",
+        "1865",
+        "1873"
+      ],
+      "learn": "The Indiana legislature officially chartered the University on January 15, 1844."
+    },
+    {
+      "id": "h06",
+      "difficulty": 2,
+      "category": "Notre Dame Football",
+      "question": "What was the score of Notre Dame's first football game in 1887?",
+      "answer": "Michigan 8, Notre Dame 0",
+      "choices": [
+        "Michigan 8, Notre Dame 0",
+        "Michigan 14, Notre Dame 7",
+        "Notre Dame 6, Michigan 0",
+        "Notre Dame 13, Michigan 7"
+      ],
+      "learn": "Michigan won Notre Dame's first football game 8-0 on Nov. 23, 1887."
+    },
+    {
+      "id": "h07",
+      "difficulty": 2,
+      "category": "Notre Dame Football",
+      "question": "Which victory is widely regarded as Notre Dame's 1913 breakthrough game?",
+      "answer": "Notre Dame 35, Army 13",
+      "choices": [
+        "Notre Dame 35, Army 13",
+        "Notre Dame 14, USC 0",
+        "Notre Dame 21, Michigan 7",
+        "Notre Dame 28, Navy 7"
+      ],
+      "learn": "Notre Dame defeated Army 35-13 at West Point on Nov. 1, 1913."
+    },
+    {
+      "id": "h08",
+      "difficulty": 3,
+      "category": "Notre Dame Football",
+      "question": "What nickname is associated with Notre Dame's famous 1924 backfield?",
+      "answer": "The Four Horsemen",
+      "choices": [
+        "The Four Horsemen",
+        "The Seven Mules",
+        "The Golden Four",
+        "The Fighting Four"
+      ],
+      "learn": "Notre Dame's 1924 team featured the famous Four Horsemen backfield."
+    },
+    {
+      "id": "h09",
+      "difficulty": 3,
+      "category": "Notre Dame Football",
+      "question": "How many consensus national championships does Notre Dame officially recognize?",
+      "answer": "11",
+      "choices": [
+        "9",
+        "10",
+        "11",
+        "13"
+      ],
+      "learn": "Notre Dame recognizes 11 consensus national championship seasons."
+    },
+    {
+      "id": "h10",
+      "difficulty": 3,
+      "category": "Notre Dame Football",
+      "question": "Which coach led Notre Dame to the 1988 national championship?",
+      "answer": "Lou Holtz",
+      "choices": [
+        "Lou Holtz",
+        "Ara Parseghian",
+        "Dan Devine",
+        "Frank Leahy"
+      ],
+      "learn": "Lou Holtz led Notre Dame to the 1988 consensus national championship."
+    },
+    {
+      "id": "h11",
+      "difficulty": 4,
+      "category": "Notre Dame Football",
+      "question": "Who was Notre Dame's first Heisman Trophy winner?",
+      "answer": "Angelo Bertelli",
+      "choices": [
+        "Angelo Bertelli",
+        "John Lujack",
+        "Leon Hart",
+        "Tim Brown"
+      ],
+      "learn": "Angelo Bertelli won the Heisman Trophy in 1943, Notre Dame's first."
+    },
+    {
+      "id": "h12",
+      "difficulty": 4,
+      "category": "Notre Dame Football",
+      "question": "How many Heisman Trophy winners has Notre Dame had?",
+      "answer": "7",
+      "choices": [
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "learn": "Notre Dame has had seven Heisman Trophy winners."
+    },
+    {
+      "id": "h13",
+      "difficulty": 4,
+      "category": "Notre Dame Football",
+      "question": "Which Notre Dame player won the 1987 Heisman Trophy?",
+      "answer": "Tim Brown",
+      "choices": [
+        "Tim Brown",
+        "Raghib Ismail",
+        "Tony Rice",
+        "Chris Zorich"
+      ],
+      "learn": "Tim Brown won the 1987 Heisman Trophy."
+    },
+    {
+      "id": "h14",
+      "difficulty": 5,
+      "category": "Notre Dame Football",
+      "question": "Which season is one of Notre Dame's 11 consensus national championship seasons?",
+      "answer": "1973",
+      "choices": [
+        "1970",
+        "1973",
+        "1975",
+        "1980"
+      ],
+      "learn": "1973 is one of Notre Dame's 11 consensus national championship seasons."
+    },
+    {
+      "id": "h15",
+      "difficulty": 5,
+      "category": "Notre Dame Football",
+      "question": "What was Notre Dame's 2024 final record after the College Football Playoff?",
+      "answer": "14-2",
+      "choices": [
+        "12-2",
+        "13-1",
+        "14-2",
+        "15-1"
+      ],
+      "learn": "Notre Dame finished the 2024 season 14-2 after reaching the CFP National Championship Game."
+    },
+    {
+      "id": "h16",
+      "difficulty": 5,
+      "category": "Notre Dame Football",
+      "question": "What was Notre Dame's final AP ranking after the 2025 season?",
+      "answer": "No. 10",
+      "choices": [
+        "No. 5",
+        "No. 8",
+        "No. 10",
+        "No. 12"
+      ],
+      "learn": "Notre Dame finished 2025 at No. 10 in the AP poll."
+    },
+    {
+      "id": "h17",
+      "difficulty": 5,
+      "category": "Notre Dame Football",
+      "question": "What was Notre Dame's overall record in 2025?",
+      "answer": "10-2",
+      "choices": [
+        "10-2",
+        "11-1",
+        "9-3",
+        "12-0"
+      ],
+      "learn": "Notre Dame finished the 2025 season 10-2."
+    },
+    {
+      "id": "h18",
+      "difficulty": 6,
+      "category": "Notre Dame Football",
+      "question": "Who led Notre Dame in rushing yards in 2025?",
+      "answer": "Jeremiyah Love",
+      "choices": [
+        "Jeremiyah Love",
+        "Aneyas Williams",
+        "CJ Carr",
+        "Nolan James Jr."
+      ],
+      "learn": "Jeremiyah Love led Notre Dame in 2025 rushing with 1,372 net yards."
+    },
+    {
+      "id": "h19",
+      "difficulty": 6,
+      "category": "Notre Dame Football",
+      "question": "How many interceptions did Notre Dame record in the 2025 season?",
+      "answer": "21",
+      "choices": [
+        "17",
+        "19",
+        "21",
+        "24"
+      ],
+      "learn": "Notre Dame recorded 21 interceptions in 2025."
+    },
+    {
+      "id": "h20",
+      "difficulty": 6,
+      "category": "Notre Dame Football",
+      "question": "Who is Notre Dame's current head football coach in 2026?",
+      "answer": "Marcus Freeman",
+      "choices": [
+        "Marcus Freeman",
+        "Brian Kelly",
+        "Al Golden",
+        "Mike Denbrock"
+      ],
+      "learn": "Marcus Freeman is Notre Dame's Dick Corbett Head Football Coach for 2026-27."
+    },
+    {
+      "id": "h21",
+      "difficulty": 7,
+      "category": "Notre Dame University",
+      "question": "Who is the 18th president of the University of Notre Dame?",
+      "answer": "Rev. Robert A. Dowd, C.S.C.",
+      "choices": [
+        "Rev. Robert A. Dowd, C.S.C.",
+        "Rev. John I. Jenkins, C.S.C.",
+        "Rev. Edward Sorin, C.S.C.",
+        "Pete Bevacqua"
+      ],
+      "learn": "Rev. Robert A. Dowd, C.S.C., became Notre Dame's 18th president on June 1, 2024."
+    },
+    {
+      "id": "h22",
+      "difficulty": 7,
+      "category": "Notre Dame Football",
+      "question": "Which coach led Notre Dame to three consensus national championships?",
+      "answer": "Knute Rockne",
+      "choices": [
+        "Knute Rockne",
+        "Ara Parseghian",
+        "Lou Holtz",
+        "Dan Devine"
+      ],
+      "learn": "Knute Rockne led Notre Dame to consensus titles in 1924, 1929 and 1930."
+    },
+    {
+      "id": "h23",
+      "difficulty": 8,
+      "category": "Notre Dame Football",
+      "question": "Which 1947 Notre Dame player won the Heisman Trophy?",
+      "answer": "Johnny Lujack",
+      "choices": [
+        "Johnny Lujack",
+        "Leon Hart",
+        "Angelo Bertelli",
+        "John Lattner"
+      ],
+      "learn": "Johnny Lujack won the Heisman in 1947 while leading Notre Dame to a national championship."
+    },
+    {
+      "id": "h24",
+      "difficulty": 8,
+      "category": "Notre Dame Football",
+      "question": "Which season was Notre Dame's first final No. 1 ranking in the AP poll?",
+      "answer": "1943",
+      "choices": [
+        "1943",
+        "1946",
+        "1947",
+        "1949"
+      ],
+      "learn": "Notre Dame finished No. 1 in the final AP poll in 1943."
+    },
+    {
+      "id": "h25",
+      "difficulty": 9,
+      "category": "Notre Dame Football",
+      "question": "Which opponent defeated Notre Dame 34-23 in the 2025 CFP National Championship Game?",
+      "answer": "Ohio State",
+      "choices": [
+        "Ohio State",
+        "Penn State",
+        "Texas",
+        "Georgia"
+      ],
+      "learn": "Ohio State defeated Notre Dame 34-23 in the 2025 CFP National Championship Game."
+    },
+    {
+      "id": "h26",
+      "difficulty": 9,
+      "category": "Notre Dame Football",
+      "question": "Which season produced Notre Dame's program-record 14 wins cited by the official Freeman bio?",
+      "answer": "2024",
+      "choices": [
+        "2022",
+        "2023",
+        "2024",
+        "2025"
+      ],
+      "learn": "Notre Dame went 14-2 in 2024, the most wins in a single season in program history."
+    },
+    {
+      "id": "h27",
+      "difficulty": 10,
+      "category": "Notre Dame Football",
+      "question": "Which sequence contains only Notre Dame consensus national championship seasons?",
+      "answer": "1924, 1947, 1988",
+      "choices": [
+        "1924, 1947, 1988",
+        "1913, 1943, 1993",
+        "1936, 1964, 1973",
+        "1929, 1953, 1988"
+      ],
+      "learn": "1924, 1947 and 1988 are all among Notre Dame's 11 consensus national championship seasons."
+    },
+    {
+      "id": "h28",
+      "difficulty": 10,
+      "category": "Notre Dame University",
+      "question": "Which statement is correct about Notre Dame's founding?",
+      "answer": "Edward Sorin arrived with seven Holy Cross companions in 1842",
+      "choices": [
+        "Edward Sorin arrived with seven Holy Cross companions in 1842",
+        "Knute Rockne founded the university in 1887",
+        "The university was chartered before Sorin arrived",
+        "Notre Dame began as a football academy"
+      ],
+      "learn": "Notre Dame began when Rev. Edward Sorin, C.S.C., arrived with seven Holy Cross companions on Nov. 26, 1842."
+    }
+  ],
+  "sources": [
+    "https://www.nd.edu/about/history/",
+    "https://175.nd.edu/timeline/",
+    "https://fightingirish.com/monogram-club-history/",
+    "https://fightingirish.com/1913-the-program-changer/",
+    "https://fightingirish.com/nowhere-but-notre-dame-national-title-history/",
+    "https://fightingirish.com/football-archives/",
+    "https://fightingirish.com/wp-content/uploads/2026/01/2025-Notre-Dame-Football-Statistics-FINAL.pdf",
+    "https://fightingirish.com/coach/marcus-freeman/",
+    "https://president.nd.edu/about/history-of-the-presidency/",
+    "https://www.ncaa.com/history/football/fbs"
+  ]
+}

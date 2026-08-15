@@ -1,0 +1,4 @@
+Irish Player IQ v16 — Connected Team Explorer
+Built: 2026-08-14
+
+Adds recursive opponent schedule/roster navigation with live team data, clickable Notre Dame schedule opponents, scores/W-L display for completed games, and official-source links.
