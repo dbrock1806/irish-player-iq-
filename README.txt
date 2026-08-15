@@ -1,31 +1,25 @@
-IRISH PLAYER IQ — V18 BUG FIX
+IRISH PLAYER IQ — LEARNING ENGINE TEST BUILD v19
 
-REPLACE ONLY THESE TWO FILES IN YOUR EXISTING GITHUB REPOSITORY:
-1. app.js
-2. styles.css
+Replace ONLY app.js and styles.css in your existing repository.
 
-Do NOT delete or replace your other files.
+This build specifically updates Learning Mode while preserving the existing data files and other app features.
 
-FIXES IN THIS VERSION
-- Restores working game-mode buttons by adding the missing newQuestion() lifecycle function.
-- Resets the locked-answer state whenever a new question starts.
-- Uses one delegated click handler so navigation, modes, answer buttons, actions, and team links continue working after every screen re-render.
-- Fixes Schedule row buttons using explicit dark backgrounds, white opponent names, and visible contrast instead of browser-default light button styling.
-- Keeps the bottom navigation dark and clickable.
-- Fixes Notre Dame player bio links to use the current official Fighting Irish roster URL pattern, with Ko'o Kia special-cased to the verified slug.
+Learning Mode changes:
+- Starts each cohort with 6 players and shows an introduction screen before testing.
+- Tracks separate mastery for number, player identity, position, and class.
+- Correct answers increase the relevant skill by 20 points; wrong answers decrease it by 15.
+- Good Understanding: 5 correct in a row OR 6 of the last 7, plus at least 65% overall.
+- Mastered: Good Understanding + every skill >=90 + at least 2 attempts per skill + one post-understanding success in each skill + overall >=90.
+- Round ends only when all 6 core players are fully mastered.
+- Next round introduces the next 6 players.
+- Previously learned players remain in a maintenance/review pool and can return to keep knowledge fresh.
+- New players are weighted more heavily, while weak/older players receive more review.
+- Class questions are included as a first-class learning skill.
+- Learning Mode has no Boost feature.
+- Learning Mode header does not show IQ score.
+- Question/player/type history reduces immediate repetition and recognizable patterns.
+- Old Learning Mode state is migrated to a fresh v19 learning schema so the new engine can be tested cleanly without deleting the rest of the app's progress.
 
-TESTS RUN
-- Node JavaScript syntax check: PASS
-- JSON validation for roster/schedule/rankings/opponents/results/stats/history: PASS
-- 114-player roster count: PASS
-- Duplicate number+position identities: PASS (0)
-- Duplicate number+position+class identities: PASS (0)
-- Notre Dame schedule count: PASS (12)
-- First scheduled opponent: Wisconsin
-- Interactive action coverage: PASS
-- Question lifecycle/lock reset smoke test: PASS
-- Local HTTP asset availability for all required files: PASS (HTTP 200)
-- Official Notre Dame roster/source verification: PASS
-
-NOTE
-The automated browser environment used for this QA run blocks local/file browser pages, so no claim is made that a real Safari/Chrome click test was completed inside that environment. The interaction code was instead checked with a source-level smoke harness plus local HTTP asset tests.
+Also included:
+- Cache-busting version updated to 20260815-v19.
+- Existing 50/50 and Skip controls remain available outside the learning mastery engine.
