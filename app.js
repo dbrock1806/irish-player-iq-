@@ -50,9 +50,9 @@ function initLearning(){
      postGood:Object.assign({number:0,player:0,position:0,class:0},o.postGood||{})
    };
  });
- if(!Array.isArray(state.learning.cohort)||state.learning.cohort.length!==6||new Set(state.learning.cohort).size!==6){
+ if(!Array.isArray(state.learning.cohort)||state.learning.cohort.length!==5||new Set(state.learning.cohort).size!==5){
    const introduced=new Set(Array.isArray(state.learning.introduced)?state.learning.introduced:[]);
-   const fresh=shuffle(ROSTER.filter(p=>!introduced.has(p.name))).slice(0,6);
+   const fresh=shuffle(ROSTER.filter(p=>!introduced.has(p.name))).slice(0,5);
    state.learning.cohort=fresh.map(p=>p.name);
    state.learning.introduced=[...new Set([...introduced,...fresh.map(p=>p.name)])];
  }
@@ -101,9 +101,12 @@ function updateLearningMastery(name,skill,correct){
 }
 function roundReady(name){
  const r=rec(name);
- return ['number','player','position','class'].every(k=>(r.skillCorrect[k]||0)>=2);
+ return ['number','player','position','class'].every(k=>Number(r.skillCorrect[k]||0)>=2);
 }
-function roundReadyAll(){return core().length===6&&core().every(p=>roundReady(p.name))}
+function roundReadyAll(){
+ const players=core();
+ return players.length===5 && players.every(p=>roundReady(p.name));
+}
 function learningComplete(){return roundReadyAll()}
 function maybeMaintain(){
  const oldCore=core().map(p=>p.name);
@@ -112,7 +115,7 @@ function maybeMaintain(){
 }
 function chooseNextCohort(){
  const introduced=new Set(state.learning.introduced||[]);
- return shuffle(ROSTER.filter(p=>!introduced.has(p.name))).slice(0,6);
+ return shuffle(ROSTER.filter(p=>!introduced.has(p.name))).slice(0,5);
 }
 function advanceLearningRound(){
  const next=chooseNextCohort();
@@ -128,40 +131,47 @@ function advanceLearningRound(){
 }
 function chooseLearning(){
  const cores=core();
- const review=state.learning.maintenance.map(n=>ROSTER.find(p=>p.name===n)).filter(Boolean).filter(p=>!state.learning.cohort.includes(p.name));
- let p;
- if(review.length&&Math.random()<0.25){
-   const weakest=review.slice().sort((a,b)=>overall(a.name)-overall(b.name)).slice(0,Math.min(4,review.length));
-   p=weakest[Math.floor(Math.random()*weakest.length)];
- }else{
-   const weighted=cores.map(p=>({p,w:Math.max(1,110-overall(p.name))}));
-   const total=weighted.reduce((a,x)=>a+x.w,0);let roll=Math.random()*total;
-   for(const x of weighted){roll-=x.w;if(roll<=0){p=x.p;break;}}
-   p=p||cores[0];
- }
- const r=rec(p.name);
- const needs=[];
- if((r.skillCorrect.number||0)<2)needs.push('playerNumber');
- if((r.skillCorrect.player||0)<2)needs.push('numberPlayer');
- if((r.skillCorrect.position||0)<2)needs.push('playerPosition');
- if((r.skillCorrect.class||0)<2)needs.push('playerClass');
- let type=shuffle(needs.length?needs:['playerNumber','numberPlayer','playerPosition','playerClass'])[0];
- const recentP=state.learning.historyPlayers||[],recentT=state.learning.historyTypes||[];
- for(let i=0;i<8&&recentP.includes(p.name)&&cores.length>1;i++){
-   const alt=cores.filter(x=>!recentP.slice(-2).includes(x.name));
-   if(alt.length)p=alt[Math.floor(Math.random()*alt.length)];
- }
- for(let i=0;i<6&&recentT.slice(-2).includes(type)&&needs.length>1;i++)type=shuffle(needs.filter(x=>x!==type))[0];
- state.learning.historyPlayers=[...recentP,p.name].slice(-5);
- state.learning.historyTypes=[...recentT,type].slice(-5);
- return {p,type};
+ if(!cores.length)return {p:ROSTER[0],type:'playerNumber'};
+
+ // Every unfinished skill is an explicit learning slot. The player and skill
+ // are selected together and never changed afterward, so a correct answer
+ // can only credit the skill that was actually asked.
+ const slots=[];
+ cores.forEach(p=>{
+   const r=rec(p.name);
+   if((r.skillCorrect.number||0)<2)slots.push({p,type:'playerNumber',skill:'number'});
+   if((r.skillCorrect.player||0)<2)slots.push({p,type:'numberPlayer',skill:'player'});
+   if((r.skillCorrect.position||0)<2)slots.push({p,type:'playerPosition',skill:'position'});
+   if((r.skillCorrect.class||0)<2)slots.push({p,type:'playerClass',skill:'class'});
+ });
+
+ const candidates=slots.length ? slots :
+   cores.flatMap(p=>SKILLS.map(skill=>({
+     p,
+     type:skill==='number'?'playerNumber':
+          skill==='player'?'numberPlayer':
+          skill==='position'?'playerPosition':'playerClass',
+     skill
+   })));
+
+ const recentPlayers=(state.learning.historyPlayers||[]).slice(-3);
+ const recentTypes=(state.learning.historyTypes||[]).slice(-2);
+
+ const fresh=candidates.filter(x=>!recentPlayers.includes(x.p.name)&&!recentTypes.includes(x.type));
+ const playerFresh=candidates.filter(x=>!recentPlayers.includes(x.p.name));
+ const pool=fresh.length ? fresh : (playerFresh.length ? playerFresh : candidates);
+ const chosen=shuffle(pool)[0];
+
+ state.learning.historyPlayers=[...(state.learning.historyPlayers||[]),chosen.p.name].slice(-5);
+ state.learning.historyTypes=[...(state.learning.historyTypes||[]),chosen.type].slice(-5);
+ return {p:chosen.p,type:chosen.type};
 }
 function learningIntro(){
  const players=core();
  const complete=state.learning.finished;
  if(complete)return shell(`<section class="learning-complete"><div class="complete-mark">☘</div><div class="eyebrow">ROSTER COMPLETE</div><h1>YOU KNOW THE IRISH</h1><p>You have completed every learning cohort in the current roster.</p><div class="learning-summary"><b>${ROSTER.length}</b><span>PLAYERS INTRODUCED</span><b>${ROSTER.filter(p=>mastered(p.name)).length}</b><span>FULLY MASTERED</span></div><button class="gold-button" data-action="learningRestart">START OVER</button></section>`,'screen quiz-screen');
  const introLabel=state.learning.round===1?'ROUND 1 • START':'ROUND '+state.learning.round+' • NEW PLAYERS';
- return shell(`<section class="learning-intro"><div class="eyebrow">LEARNING MODE</div><div class="round-badge">${esc(introLabel)}</div><h1>MEET YOUR NEXT 6</h1><p>Study these players first. You'll be tested on their <b>name, number, position and class</b>. Previously learned players will return for review.</p><div class="intro-grid">${players.map(p=>`<div class="intro-player"><span class="intro-num">#${esc(p.num)}</span><b>${esc(p.name)}</b><small>${esc(p.pos)} • ${esc(classLabel(p))}</small></div>`).join('')}</div><div class="intro-footer"><span>CORE PLAYERS</span><b>6</b><button class="gold-button" data-action="startLearningRound">START ROUND ${state.learning.round} →</button></div></section>`,'screen quiz-screen');
+ return shell(`<section class="learning-intro"><div class="eyebrow">LEARNING MODE</div><div class="round-badge">${esc(introLabel)}</div><h1>MEET YOUR NEXT 5</h1><p>Study these players first. You'll be tested on their <b>name, number, position and class</b>. Previously learned players will return for review.</p><div class="intro-grid">${players.map(p=>`<div class="intro-player"><span class="intro-num">#${esc(p.num)}</span><b>${esc(p.name)}</b><small>${esc(p.pos)} • ${esc(classLabel(p))}</small></div>`).join('')}</div><div class="intro-footer"><span>CORE PLAYERS</span><b>5</b><button class="gold-button" data-action="startLearningRound">START ROUND ${state.learning.round} →</button></div></section>`,'screen quiz-screen');
 }
 function makeQuestion(){
  if(state.mode==='learning')return makeLearning();
@@ -226,7 +236,15 @@ function nav(){return `<nav class="bottomnav" aria-label="Primary navigation"><b
 function home(){const g=nextGame();return shell(`<section class="home-hero"><div class="crest"><b>ND</b><span>FIGHTING IRISH</span></div><div class="kicker">LEARN THE IRISH. FOLLOW THE SEASON.</div><h1>PLAYER <strong>IQ</strong></h1><p>Learn every name, number, position and class — then see how much you really know.</p></section><section class="iq-panel"><div class="ring"><div><b>${Math.round(ROSTER.filter(p=>overall(p.name)>=70).length/ROSTER.length*100)}%</b><small>CONFIDENT</small></div></div><div class="iq-copy"><div class="eyebrow">YOUR IRISH IQ</div><div class="iq-stats"><span><b>${ROSTER.filter(p=>overall(p.name)>=70).length}</b> PLAYERS</span><span><b>${state.score}</b> IQ</span><span><b>${state.best}</b> BEST STREAK</span></div></div></section><section class="next-card"><div><div class="eyebrow">NEXT GAME</div><h2>VS ${esc(g.opponent)}</h2><p>${esc(g.date)} • ${esc(g.time||'TBA')}<br>${esc(g.venue||'')}</p></div><button class="gold-button" data-action="gameprep">GAME PREP <span>→</span></button></section><section class="section-head choose"><span>CHOOSE YOUR TRAINING</span><small>ALL GAME MODES</small></section><div class="home-modes">${homeMode('◎','LEARNING MODE','Adaptive roster training • small groups • spaced review.','learning')}${homeMode('⚡','QUICK PLAY','Fast mixed recall of name, number and position.','mix')}${homeMode('#','NUMBER → PLAYER','Number + position identify the player.','numberPlayer')}${homeMode('01','PLAYER → NUMBER','Name + position + class. Recall the number.','playerNumber')}${homeMode('♟','PLAYER → POSITION','Name + number + class. Recall the position.','playerPosition')}${homeMode('◆','ELITE MODE','Hard combinations: class, position, number and identity.','elite')}${homeMode('🏛','HISTORY MODE','Notre Dame university + football history. 10 questions, one miss ends the game.','history')}</div>${hasPostgame()?`<section class="postgame-available"><div><b>POST-GAME IQ AVAILABLE</b><span>Test what you remember from the latest game.</span></div><button data-action="postgame">START →</button></section>`:''}<section class="roster-home-link"><button data-nav="roster"><b>FULL NOTRE DAME ROSTER</b><span>Open and study every player.</span><i>→</i></button></section>`,'screen home-screen')}
 function homeMode(icon,title,sub,mode){return `<button class="home-mode" data-mode="${mode}"><div class="mode-icon">${icon}</div><div><b>${title}</b><span>${sub}</span></div><i>›</i></button>`}
 function visualForQuiz(p,m){if(!p||!p.name)return '';if(m==='numberPlayer')return `<div class="number-hero">#${esc(p.num)}</div><div class="support-prominent">${esc(p.pos)} • ${esc(classLabel(p))}</div>`;if(m==='playerNumber')return `<div class="identity-card"><div class="identity-badge">PLAYER</div><div><h2>${esc(p.name)}</h2><b class="prominent-context">${esc(p.pos)} • ${esc(classLabel(p))}</b></div></div>`;if(m==='playerPosition')return `<div class="identity-card"><div class="identity-number">#${esc(p.num)}</div><div><h2>${esc(p.name)}</h2><b class="prominent-context">${esc(classLabel(p))}</b></div></div>`;if(m==='playerClass')return `<div class="identity-card"><div class="identity-badge">CLASS</div><div><h2>${esc(p.name)}</h2><b>${esc(p.num)} • ${esc(p.pos)}</b></div></div>`;return `<div class="elite-context"><b>${esc(p.num)}</b><span>${esc(p.pos)} • ${esc(classLabel(p))}</span></div>`}
-function quiz(){if(!state.questionData){state.questionData=makeQuestion()}const q=state.questionData;const p=state.current;const learning=state.mode==='learning';const prep=state.mode==='prep',post=state.mode==='postgame',history=state.mode==='history';let status='';if(learning)status=`<div class="learning-status"><div><b>LEARNING MODE</b><span>ROUND ${state.learning.round}</span></div><div><strong>${core().filter(p=>mastered(p.name)).length}/6</strong><span>CORE MASTERED</span></div><div><strong>${core().filter(p=>comfortable(p.name)).length}/6</strong><span>GOOD UNDERSTANDING</span></div></div>`;if(prep)status=`<div class="learning-status"><div><b>GAME PREP</b><span>LEARN THE OPPONENT</span></div><div><strong>${state.roundQuestions}</strong><span>STUDIED</span></div><div><strong>FINISH</strong><span>AT 8 QUESTIONS</span></div></div>`;if(post)status=`<div class="learning-status"><div><b>POST-GAME IQ</b><span>TEST MODE</span></div><div><strong>${state.roundQuestions}</strong><span>QUESTIONS</span></div><div><strong>NO HINTS</strong><span>TEST YOUR MEMORY</span></div>`;
+function quiz(){if(!state.questionData){state.questionData=makeQuestion()}const q=state.questionData;const p=state.current;const learning=state.mode==='learning';const prep=state.mode==='prep',post=state.mode==='postgame',history=state.mode==='history';let status='';if(learning){
+ const cp=core();
+ const readyPlayers=cp.filter(p=>roundReady(p.name)).length;
+ const skillDone=cp.reduce((sum,p)=>{
+   const r=rec(p.name);
+   return sum+['number','player','position','class'].filter(k=>Number(r.skillCorrect[k]||0)>=2).length;
+ },0);
+ status=`<div class="learning-status"><div><b>LEARNING MODE</b><span>ROUND ${state.learning.round}</span></div><div><strong>${readyPlayers}/5</strong><span>PLAYERS READY</span></div><div><strong>${skillDone}/20</strong><span>SKILLS COMPLETE</span></div></div>`;
+}if(prep)status=`<div class="learning-status"><div><b>GAME PREP</b><span>LEARN THE OPPONENT</span></div><div><strong>${state.roundQuestions}</strong><span>STUDIED</span></div><div><strong>FINISH</strong><span>AT 8 QUESTIONS</span></div></div>`;if(post)status=`<div class="learning-status"><div><b>POST-GAME IQ</b><span>TEST MODE</span></div><div><strong>${state.roundQuestions}</strong><span>QUESTIONS</span></div><div><strong>NO HINTS</strong><span>TEST YOUR MEMORY</span></div>`;
 if(history)status=`<div class="learning-status"><div><b>HISTORY MODE</b><span>10-QUESTION TEST</span></div><div><strong>${state.history.questionIndex||0}/10</strong><span>PROGRESS</span></div><div><strong>LEVEL ${state.history.difficulty||1}</strong><span>DIFFICULTY</span></div>`;return shell(`<div class="quiz-head"><div><span>${learning?'FOCUSED TRAINING':prep?'OPPONENT STUDY':post?'POST-GAME TEST':history?'HISTORY TEST':`ROUND ${state.round} / 10`}</span><b>${esc(q.label)}</b></div>${learning?'':'<div class="score-mini">'+state.score+'<small>IQ</small></div>'}</div>${status}<section class="quiz-card"><div class="eyebrow">${esc(q.label)}</div><h1>${esc(q.title)}</h1>${p.name?visualForQuiz(p,state.activeQuestion):''}<div class="support-line">${esc(q.support||'')}</div>${learning?`<div class="mastery-strip"><span>NUMBER ${rec(p.name).number}%</span><span>PLAYER ${rec(p.name).player}%</span><span>POSITION ${rec(p.name).position}%</span><span>CLASS ${rec(p.name).class}%</span><span>OVERALL ${overall(p.name)}%</span></div>`:''}<div class="answer-label">${post||history?'MAKE YOUR BEST ANSWER':'CHOOSE YOUR ANSWER'}</div><div class="answers">${q.choices.map((c,i)=>`<button class="answer" data-index="${i}" data-answer="${esc(c)}">${esc(c)}</button>`).join('')}</div>${!post&&!prep&&!history?`<div class="quiz-tools"><button class="tool" data-action="fifty">50/50</button><button class="tool" data-action="skip">SKIP</button></div>`:''}<div id="result"></div></section>`,'screen quiz-screen')}
 function roster(){return shell(`<section class="page-head"><div><h1>ROSTER</h1><p>STUDY THE 2026–27 IRISH</p></div></section><div class="roster-intro">${ROSTER.length} players • Tap a player to study their name, number, position and class.</div><div class="roster-list">${ROSTER.map(p=>`<button class="roster-row" data-player="${esc(p.name)}"><div class="p-number">#${esc(p.num)}</div><div><b>${esc(p.name)}</b><small>${esc(p.pos)} • ${esc(classLabel(p))}</small></div><strong>${overall(p.name)}%</strong></button>`).join('')}</div>`,'screen roster-screen')}
 function progress(){const confident=ROSTER.filter(p=>overall(p.name)>=70).length;return shell(`<section class="page-head"><div><h1>MY IRISH IQ</h1><p>MASTER THE ROSTER</p></div></section><div class="big-progress"><div class="big-pct">${Math.round(confident/ROSTER.length*100)}%</div><div><b>CONFIDENT</b><span>${confident} of ${ROSTER.length} players at 70%+</span></div></div><div class="progress-list">${ROSTER.map(p=>`<div class="p-row"><div class="p-number">#${esc(p.num)}</div><div><b>${esc(p.name)}</b><small>${esc(p.pos)} • ${esc(classLabel(p))}</small></div><strong>${overall(p.name)}%</strong></div>`).join('')}</div>`,'screen')}
@@ -269,9 +287,14 @@ function answer(btn){
  if(state.mode==='prep'||state.mode==='postgame')state.roundQuestions++;
  if(state.mode==='history')state.history.questionIndex++;
  save();
- const reveal=`<div class="learn-result ${correct?'good':''}"><b>${correct?'✓ CORRECT':'LEARN IT: '+esc(q.answer)}</b><span>${esc(q.learn||'Review the information and try again.')}</span></div>`;
+ let learningProgress='';
+ if(state.mode==='learning' && state.current && state.current.name){
+   const lr=rec(state.current.name);
+   learningProgress=`<small class="learning-progress">THIS PLAYER • NUMBER ${lr.skillCorrect.number||0}/2 • PLAYER ${lr.skillCorrect.player||0}/2 • POSITION ${lr.skillCorrect.position||0}/2 • CLASS ${lr.skillCorrect.class||0}/2</small>`;
+ }
+ const reveal=`<div class="learn-result ${correct?'good':''}"><b>${correct?'✓ CORRECT':'LEARN IT: '+esc(q.answer)}</b><span>${esc(q.learn||'Review the information and try again.')}</span>${learningProgress}</div>`;
  let next='NEXT →';
- if(state.mode==='learning'&&learningComplete())next='COMPLETE ROUND →';
+ if(state.mode==='learning'&&learningComplete())next='ROUND COMPLETE →';
  if(state.mode==='prep'&&state.roundQuestions>=8)next='FINISH GAME PREP →';
  if(state.mode==='postgame'&&state.roundQuestions>=8)next='FINISH POST-GAME →';
  if(state.mode==='history'&&(!correct || state.history.questionIndex>=10))next=correct?'COMPLETE HISTORY GAME →':'GAME OVER — VIEW RESULTS →';
