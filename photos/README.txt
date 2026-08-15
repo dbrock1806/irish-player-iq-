@@ -1,1 +1,0 @@
-Place the player photos you already collected here. Suggested filename: lowercase player name with hyphens, e.g. cj-carr.jpg or leonard-moore.jpg. The app also tries number/name variants. Keep uniform photos with the jersey number visible when possible.
